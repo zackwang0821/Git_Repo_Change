@@ -8,14 +8,13 @@ REM ============================================================
 REM CONFIG
 
 set "START_COMMIT=8ea08ee8a724c412c63961f46df5ee382c74e233"
-set "UNTIL_COMMIT=1776be427f4e54e8907f173b695c04cd4636ce7c"
-set "SOURCE_CODE_DIR_NAME=5.dmc-fw_DB1"
+set "UNTIL_COMMIT=4c04a84615807cf7cb19c0ce3ae9a465a24323de"
+set "SOURCE_CODE_DIR_NAME=6.dmc-fw_cmake"
 
 REM ============================================================
 REM BASE_ENV
 
 set "MSG="
-set "EXE_7z=C:\Program Files\7-Zip\7z.exe"
 set "DIR_PUSHED=FALSE"
 set "WORKDIR=%CD%"
 set "OUTPUT_DIR=%CD%\%SOURCE_CODE_DIR_NAME%_change_list"
@@ -51,6 +50,19 @@ pushd %SOURCE_CODE_DIR_NAME% && set "DIR_PUSHED=TRUE"
 REM Get commit change list
 echo Getting commit change list...
 %GIT_LOG% "%START_COMMIT%".."%UNTIL_COMMIT%" > "%OUTPUT_DIR%\%OUTPUT_LIST_NAME%"
+
+REM Add border lines before every "commit" string in the file
+echo Adding border lines...
+set "TEMP_FILE=%OUTPUT_DIR%\temp.txt"
+(for /f "tokens=*" %%a in ('type "%OUTPUT_DIR%\%OUTPUT_LIST_NAME%"') do (
+    echo %%a | findstr /b "commit" >nul && (
+        echo ====================================================================================================================================================================
+        echo.
+    )
+    echo %%a
+    echo.
+)) > "%TEMP_FILE%"
+move /y "%TEMP_FILE%" "%OUTPUT_DIR%\%OUTPUT_LIST_NAME%" > nul
 
 REM Main Program end
 echo.
